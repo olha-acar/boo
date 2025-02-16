@@ -58,12 +58,12 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      - name: Upload app bundle as artifact
+      - name: Upload APK
+        id: uploadArtifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-bundle
-          path: app/build/outputs/bundle/release/app-release.aab
-      - run: 'echo Build status report=${{ job.status }}'
+          name: app
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
 
   deploy:
       name: Job_2 - Deploy aab to playstore
