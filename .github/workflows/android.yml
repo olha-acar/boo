@@ -62,7 +62,7 @@ jobs:
         id: uploadArtifact
         uses: actions/upload-artifact@v4
         with:
-          name: app
+          name: app-bundle
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
 
   deploy:
