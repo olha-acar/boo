@@ -41,9 +41,12 @@ jobs:
       - name: Make Gradlew Executable
         run: cd android && chmod +x ./gradlew
 
-      - name: Build Android Release
-        run: |
-          cd android && ./gradlew clean && ./gradlew app:assembleRelease
+      # - name: Build Android Release
+      #   run: |
+      #     cd android && ./gradlew clean && ./gradlew app:assembleRelease
+
+      - name: Build prodRelease
+        run: cd android && ./gradlew clean && ./gradlew bundleRelease
 
       - name: Sign APK
         id: sign_app
@@ -55,12 +58,36 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
 
-      - name: Upload APK
-        id: uploadArtifact
-        uses: actions/upload-artifact@v4
+      - name: Upload app bundle as artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: app
-          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          name: app-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
+      - run: 'echo Build status report=${{ job.status }}'
+
+  deploy:
+      name: Job_2 - Deploy aab to playstore
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download app bundle from artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: app-bundle
+        - name: Publish to Play Store
+          uses: r0adkll/upload-google-play@v1
+          with:
+            serviceAccountJsonPlainText: '${{ secrets.SERVICE_ACCOUNT_JSON }}'
+            packageName: com.boo
+            releaseFiles: '${{ github.workspace }}/app-release.aab'
+            track: production
+
+      # - name: Upload APK
+      #   id: uploadArtifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: app
+      #     path: ${{ steps.sign_app.outputs.signedReleaseFile }}
 
       # - name: Upload APK to Firebase
       #   uses: wzieba/Firebase-Distribution-Github-Action@v1
