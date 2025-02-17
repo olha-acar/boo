@@ -1,4 +1,4 @@
-package com.boo
+package com.boo.afacar
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,4 +1,4 @@
-package com.boo
+package com.boo.afacar
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
